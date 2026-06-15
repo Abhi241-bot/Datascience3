@@ -209,38 +209,50 @@ with tab_causal:
         st.info("Causal adjustment needs confounder columns (`pre_metric`, `age`). "
                 "Use the simulator's observational scenario to see the bias get removed.")
     else:
-        with st.spinner("Running DoWhy propensity-score matching..."):
-            psm = _cached_psm(df, outcome_col)
-        labels = ["Naive A/B (unadjusted)", "PSM / DoWhy (adjusted)"]
-        ests = [psm.naive_estimate, psm.adjusted_estimate]
-        fig = _ci_plot(labels, ests, ests, ests, truth=truth,
-                       title="Propensity-score matching removes confounding bias")
-        st.plotly_chart(fig, width="stretch")
-        cc1, cc2 = st.columns(2)
-        cc1.metric("Naive estimate (biased)", f"{psm.naive_estimate:.3f}")
-        cc2.metric("Adjusted estimate (PSM)", f"{psm.adjusted_estimate:.3f}")
-        if truth is not None:
-            bias_naive = abs(psm.naive_estimate - truth)
-            bias_psm = abs(psm.adjusted_estimate - truth)
-            st.success(f"PSM cut the bias from **{bias_naive:.3f}** (naive) to **{bias_psm:.3f}** "
-                       f"vs the known true effect of {truth:.3f}.")
+        try:
+            with st.spinner("Running DoWhy propensity-score matching..."):
+                psm = _cached_psm(df, outcome_col)
+        except Exception as exc:  # missing/incompatible DoWhy build on the host
+            st.warning(f"Propensity-score matching unavailable in this environment "
+                       f"(DoWhy/cvxpy import failed: {exc}). Run locally for the full causal stack.")
+            psm = None
+        if psm is not None:
+            labels = ["Naive A/B (unadjusted)", "PSM / DoWhy (adjusted)"]
+            ests = [psm.naive_estimate, psm.adjusted_estimate]
+            fig = _ci_plot(labels, ests, ests, ests, truth=truth,
+                           title="Propensity-score matching removes confounding bias")
+            st.plotly_chart(fig, width="stretch")
+            cc1, cc2 = st.columns(2)
+            cc1.metric("Naive estimate (biased)", f"{psm.naive_estimate:.3f}")
+            cc2.metric("Adjusted estimate (PSM)", f"{psm.adjusted_estimate:.3f}")
+            if truth is not None:
+                bias_naive = abs(psm.naive_estimate - truth)
+                bias_psm = abs(psm.adjusted_estimate - truth)
+                st.success(f"PSM cut the bias from **{bias_naive:.3f}** (naive) to **{bias_psm:.3f}** "
+                           f"vs the known true effect of {truth:.3f}.")
 
     st.divider()
     st.subheader("Heterogeneous effects (causal forest)")
     if "segment" in df.columns:
-        with st.spinner("Fitting EconML causal forest..."):
-            up = _cached_uplift(df, outcome_col)
-        st.dataframe(up.segment_table, width="stretch")
-        fig2 = _ci_plot(
-            [f"segment {int(r.segment)}" for r in up.segment_table.itertuples()],
-            up.segment_table["uplift"].tolist(),
-            up.segment_table["ci_low"].tolist(),
-            up.segment_table["ci_high"].tolist(),
-            title="Per-segment uplift", xlab="Estimated uplift (CATE)",
-        )
-        st.plotly_chart(fig2, width="stretch")
-        st.info(f"Highest-uplift segment: **{up.top_segment}**"
-                + (f" (injected high segment was {gt.high_uplift_segment})" if gt is not None else ""))
+        try:
+            with st.spinner("Fitting EconML causal forest..."):
+                up = _cached_uplift(df, outcome_col)
+        except Exception as exc:  # missing/incompatible EconML build on the host
+            st.warning(f"Causal forest unavailable in this environment "
+                       f"(EconML import failed: {exc}). Run locally for the full causal stack.")
+            up = None
+        if up is not None:
+            st.dataframe(up.segment_table, width="stretch")
+            fig2 = _ci_plot(
+                [f"segment {int(r.segment)}" for r in up.segment_table.itertuples()],
+                up.segment_table["uplift"].tolist(),
+                up.segment_table["ci_low"].tolist(),
+                up.segment_table["ci_high"].tolist(),
+                title="Per-segment uplift", xlab="Estimated uplift (CATE)",
+            )
+            st.plotly_chart(fig2, width="stretch")
+            st.info(f"Highest-uplift segment: **{up.top_segment}**"
+                    + (f" (injected high segment was {gt.high_uplift_segment})" if gt is not None else ""))
     else:
         st.info("No `segment` column to analyse heterogeneity.")
 

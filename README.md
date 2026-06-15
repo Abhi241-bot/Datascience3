@@ -83,7 +83,10 @@ The app is deploy-ready for **[Streamlit Community Cloud](https://share.streamli
 
 1. Push this repo to GitHub (already at `Abhi241-bot/Datascience3`).
 2. On Streamlit Community Cloud → **New app** → point at this repo, `app.py`.
-3. In **Advanced settings**, set Python to **3.11** (or 3.10/3.12) so the DoWhy/EconML wheels resolve.
+3. **In Advanced settings, set Python version to `3.12`** (this is required, not optional).
+   DoWhy pulls in `cvxpy`, and the scientific stack has **no wheels for Python 3.13/3.14**,
+   so a newer interpreter forces a from-source build that fails on Streamlit Cloud.
+   If the app was already created on 3.14, open its **Settings → Python version → 3.12 → Reboot**.
 4. Deploy, then paste the public URL into the [Live demo](#live-demo) link above.
 
 ---
