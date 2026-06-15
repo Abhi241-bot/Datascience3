@@ -2,7 +2,7 @@
 
 **Self-serve experiment analysis that flags broken randomization and recovers true effects with causal methods.** Upload (or simulate) experiment data and the app runs a rigorous A/B test, applies causal inference when randomization is broken or impossible, and returns a plain-English **ship / don't ship** verdict with effect sizes and confidence intervals — every number validated against a known ground-truth effect.
 
-> Most student portfolios show a t-test. This one shows the thing senior DS interviews at Netflix / Microsoft / Booking actually weight: **causal inference** — recognizing when an A/B estimate is biased and correcting it.
+
 
 ---
 
