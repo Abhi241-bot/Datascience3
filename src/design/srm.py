@@ -55,7 +55,7 @@ def srm_check(
     expected = split * total
 
     chi2, p = stats.chisquare(f_obs=observed, f_exp=expected)
-    passed = p >= alpha
+    passed = bool(p >= alpha)
 
     if passed:
         msg = f"No SRM detected (p={p:.4f} >= {alpha}). Split looks healthy."
