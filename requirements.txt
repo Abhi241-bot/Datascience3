@@ -13,6 +13,9 @@ statsmodels>=0.14
 dowhy>=0.12          # pulls cvxpy>=1.7.1 (needs a wheel -> pin Python 3.12)
 econml>=0.15
 scikit-learn>=1.3
+# DoWhy 0.14 still calls networkx.algorithms.d_separated, which was removed in
+# networkx 3.5. Cap below 3.5 so PSM works on the deployed environment.
+networkx>=3.0,<3.5
 
 # App + plotting
 streamlit>=1.30
