@@ -8,7 +8,7 @@
 
 ## Live demo
 
-**[▶ Launch the app](#)** ← _replace with your Streamlit Community Cloud URL after deploying (see [Deploy](#deploy))._
+**[▶ Launch the app](https://datascience3-kcveuawt3683cwsstu8qbt.streamlit.app/)**
 
 Hit **Simulate data** in the sidebar and walk Data → Design check → A/B + CUPED → Causal analysis → Verdict in under a minute, no setup.
 
