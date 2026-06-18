@@ -87,7 +87,7 @@ The app is deploy-ready for **[Streamlit Community Cloud](https://share.streamli
    DoWhy pulls in `cvxpy`, and the scientific stack has **no wheels for Python 3.13/3.14**,
    so a newer interpreter forces a from-source build that fails on Streamlit Cloud.
    If the app was already created on 3.14, open its **Settings → Python version → 3.12 → Reboot**.
-4. Deploy, then paste the public URL into the [Live demo](#live-demo) link above.
+4. Deploy — the public URL goes in the [Live demo](#live-demo) link at the top.
 
 ---
 
